@@ -1,2 +1,5 @@
+#include <paddle/extension.h>
+
+#include <vector>
+
 #include "macros.h"
-#include <torch/torch.h>

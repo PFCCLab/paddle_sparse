@@ -1,29 +1,40 @@
 from itertools import product
 
+import numpy as np
+import paddle
 import pytest
-import torch
 
-from torch_sparse import SparseTensor
-from torch_sparse.testing import devices, grad_dtypes
+from paddle_sparse import SparseTensor
+from paddle_sparse.testing import devices
+from paddle_sparse.testing import grad_dtypes
+
+np.random.seed(1234)
 
 
-@pytest.mark.parametrize('dtype,device', product(grad_dtypes, devices))
+@pytest.mark.parametrize("dtype,device", product(grad_dtypes, devices))
 def test_getitem(dtype, device):
+    device = str(device)[6:-1]
+    paddle.device.set_device(device)
+
     m = 50
     n = 40
     k = 10
-    mat = torch.randn(m, n, dtype=dtype, device=device)
+    mat = paddle.randn([m, n], dtype=dtype)
     mat = SparseTensor.from_dense(mat)
 
-    idx1 = torch.randint(0, m, (k, ), dtype=torch.long, device=device)
-    idx2 = torch.randint(0, n, (k, ), dtype=torch.long, device=device)
-    bool1 = torch.zeros(m, dtype=torch.bool, device=device)
-    bool2 = torch.zeros(n, dtype=torch.bool, device=device)
-    bool1.scatter_(0, idx1, 1)
-    bool2.scatter_(0, idx2, 1)
+    # idx1 = paddle.to_tensor(np.random.randint(0, m, (k, )), dtype=paddle.int64)
+    # idx2 = paddle.to_tensor(np.random.randint(0, n, (k, )), dtype=paddle.int64)
+
+    idx1 = paddle.randint(0, m, (k,), dtype=paddle.int64)
+    idx2 = paddle.randint(0, n, (k,), dtype=paddle.int64)
+    bool1 = paddle.zeros([m], dtype=paddle.bool)
+    bool2 = paddle.zeros([n], dtype=paddle.bool)
+    bool1 = bool1.astype(paddle.int64).put_along_axis_(idx1, 1, 0).astype(paddle.bool)
+    bool2 = bool2.astype(paddle.int64).put_along_axis_(idx2, 1, 0).astype(paddle.bool)
+
     # idx1 and idx2 may have duplicates
-    k1_bool = bool1.nonzero().size(0)
-    k2_bool = bool2.nonzero().size(0)
+    k1_bool = bool1.nonzero().shape[0]
+    k2_bool = bool2.nonzero().shape[0]
 
     idx1np = idx1.cpu().numpy()
     idx2np = idx2.cpu().numpy()
@@ -55,11 +66,14 @@ def test_getitem(dtype, device):
     assert mat[bool1list].sizes() == [k1_bool, n]
 
 
-@pytest.mark.parametrize('device', devices)
+@pytest.mark.parametrize("device", devices)
 def test_to_symmetric(device):
-    row = torch.tensor([0, 0, 0, 1, 1], device=device)
-    col = torch.tensor([0, 1, 2, 0, 2], device=device)
-    value = torch.arange(1, 6, device=device)
+    device = str(device)[6:-1]
+    paddle.device.set_device(str(device))
+
+    row = paddle.to_tensor([0, 0, 0, 1, 1])
+    col = paddle.to_tensor([0, 1, 2, 0, 2])
+    value = paddle.arange(1, 6)
     mat = SparseTensor(row=row, col=col, value=value)
     assert not mat.is_symmetric()
 
@@ -74,12 +88,12 @@ def test_to_symmetric(device):
 
 
 def test_equal():
-    row = torch.tensor([0, 0, 0, 1, 1])
-    col = torch.tensor([0, 1, 2, 0, 2])
-    value = torch.arange(1, 6)
+    row = paddle.to_tensor([0, 0, 0, 1, 1])
+    col = paddle.to_tensor([0, 1, 2, 0, 2])
+    value = paddle.arange(1, 6)
     matA = SparseTensor(row=row, col=col, value=value)
     matB = SparseTensor(row=row, col=col, value=value)
-    col = torch.tensor([0, 1, 2, 0, 1])
+    col = paddle.to_tensor([0, 1, 2, 0, 1])
     matC = SparseTensor(row=row, col=col, value=value)
 
     assert id(matA) != id(matB)
@@ -87,3 +101,22 @@ def test_equal():
 
     assert id(matA) != id(matC)
     assert matA != matC
+
+
+def test_to():
+    row = paddle.to_tensor([0, 0, 0, 1, 1])
+    col = paddle.to_tensor([0, 1, 2, 0, 2])
+    value = paddle.arange(1, 6)
+    mat = SparseTensor(row=row, col=col, value=value)
+
+    assert value.dtype == paddle.int64
+
+    mat = mat.to(paddle.float32)
+
+    assert mat.storage.value().dtype == paddle.float32
+
+    mat = mat.to(paddle.CPUPlace(), paddle.float32)
+
+    assert str(mat.storage.value().place) == str(paddle.CPUPlace())
+    assert str(mat.storage.row().place) == str(paddle.CPUPlace())
+    assert str(mat.storage.col().place) == str(paddle.CPUPlace())

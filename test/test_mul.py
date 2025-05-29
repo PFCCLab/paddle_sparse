@@ -1,21 +1,27 @@
 from itertools import product
 
+import paddle
 import pytest
-import torch
 
-from torch_sparse import SparseTensor, mul
-from torch_sparse.testing import devices, dtypes, tensor
+from paddle_sparse import SparseTensor
+from paddle_sparse import mul
+from paddle_sparse.testing import devices
+from paddle_sparse.testing import dtypes
+from paddle_sparse.testing import tensor
 
 
-@pytest.mark.parametrize('dtype,device', product(dtypes, devices))
+@pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_sparse_sparse_mul(dtype, device):
-    rowA = torch.tensor([0, 0, 1, 2, 2], device=device)
-    colA = torch.tensor([0, 2, 1, 0, 1], device=device)
+    device = str(device)[6:-1]
+    paddle.device.set_device(device)
+
+    rowA = paddle.to_tensor([0, 0, 1, 2, 2])
+    colA = paddle.to_tensor([0, 2, 1, 0, 1])
     valueA = tensor([1, 2, 4, 1, 3], dtype, device)
     A = SparseTensor(row=rowA, col=colA, value=valueA)
 
-    rowB = torch.tensor([0, 0, 1, 2, 2], device=device)
-    colB = torch.tensor([1, 2, 2, 1, 2], device=device)
+    rowB = paddle.to_tensor([0, 0, 1, 2, 2])
+    colB = paddle.to_tensor([1, 2, 2, 1, 2])
     valueB = tensor([2, 3, 1, 2, 4], dtype, device)
     B = SparseTensor(row=rowB, col=colB, value=valueB)
 
@@ -26,22 +32,24 @@ def test_sparse_sparse_mul(dtype, device):
     assert colC.tolist() == [2, 1]
     assert valueC.tolist() == [6, 6]
 
-    @torch.jit.script
     def jit_mul(A: SparseTensor, B: SparseTensor) -> SparseTensor:
         return mul(A, B)
 
     jit_mul(A, B)
 
 
-@pytest.mark.parametrize('dtype,device', product(dtypes, devices))
+@pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_sparse_sparse_mul_empty(dtype, device):
-    rowA = torch.tensor([0], device=device)
-    colA = torch.tensor([1], device=device)
+    device = str(device)[6:-1]
+    paddle.device.set_device(device)
+
+    rowA = paddle.to_tensor([0])
+    colA = paddle.to_tensor([1])
     valueA = tensor([1], dtype, device)
     A = SparseTensor(row=rowA, col=colA, value=valueA)
 
-    rowB = torch.tensor([1], device=device)
-    colB = torch.tensor([0], device=device)
+    rowB = paddle.to_tensor([1])
+    colB = paddle.to_tensor([0])
     valueB = tensor([2], dtype, device)
     B = SparseTensor(row=rowB, col=colB, value=valueB)
 
