@@ -22,6 +22,27 @@ SPARSE_API std::vector<paddle::Tensor> ind2ptr(paddle::Tensor& ind, int64_t M) {
   }
 }
 
+
+std::vector<paddle::DataType> ind2ptrInferDtype(
+    const paddle::DataType ind_dtype) {
+  return {ind_dtype};
+}
+
+
+std::vector<std::vector<int64_t>> ind2ptrInferShape(int64_t M) {
+  return {{M + 1}};
+}
+
+
+PD_BUILD_OP(ind2ptr)
+    .Inputs({"ind"})
+    .Outputs({"out"})
+    .Attrs({"M: int64_t"})
+    .SetKernelFn(PD_KERNEL(ind2ptr))
+    .SetInferShapeFn(PD_INFER_SHAPE(ind2ptrInferShape))
+    .SetInferDtypeFn(PD_INFER_DTYPE(ind2ptrInferDtype));
+
+
 SPARSE_API std::vector<paddle::Tensor> ptr2ind(paddle::Tensor& ptr, int64_t E) {
   if (ptr.is_gpu()) {
 #ifdef WITH_CUDA
@@ -35,15 +56,19 @@ SPARSE_API std::vector<paddle::Tensor> ptr2ind(paddle::Tensor& ptr, int64_t E) {
 }
 
 
-PD_BUILD_OP(ind2ptr)
-    .Inputs({"ind"})
-    .Outputs({"out"})
-    .Attrs({"M: int64_t"})
-    .SetKernelFn(PD_KERNEL(ind2ptr));
+std::vector<paddle::DataType> ptr2indInferDtype(
+    const paddle::DataType ptr_dtype) {
+  return {ptr_dtype};
+}
+
+
+std::vector<std::vector<int64_t>> ptr2indInferShape(int64_t E) { return {{E}}; }
 
 
 PD_BUILD_OP(ptr2ind)
     .Inputs({"ptr"})
     .Outputs({"out"})
     .Attrs({"E: int64_t"})
-    .SetKernelFn(PD_KERNEL(ptr2ind));
+    .SetKernelFn(PD_KERNEL(ptr2ind))
+    .SetInferShapeFn(PD_INFER_SHAPE(ptr2indInferShape))
+    .SetInferDtypeFn(PD_INFER_DTYPE(ptr2indInferDtype));
