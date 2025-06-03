@@ -2,5 +2,5 @@
 
 #include "../extensions.h"
 
-torch::Tensor ind2ptr_cpu(torch::Tensor ind, int64_t M);
-torch::Tensor ptr2ind_cpu(torch::Tensor ptr, int64_t E);
+paddle::Tensor ind2ptr_cpu(paddle::Tensor ind, int64_t M);
+paddle::Tensor ptr2ind_cpu(paddle::Tensor ptr, int64_t E);

@@ -1,3 +1,73 @@
+# Paddle Sparse
+
+![paddle_logo](assets/paddle_logo.png)
+
+> [!IMPORTANT]
+> Paddle-Sparse origin from [PyTorch-Sparse](https://github.com/rusty1s/pytorch_sparse) and adapt for Paddle.
+>
+> It was developed base version 6f86680 of PyTorch-Sparse. It is recommended to install **nightly-build(develop)** Paddle before running any code in this branch.
+>
+> It was verified on Ubuntu 20.04. It may meet some problems if you are using other environment.
+
+## **Build and Install**
+
+You can install paddle-sparse through following commands.
+
+```bash
+# install nightly-build paddlepaddle-gpu
+pip uninstall paddlepaddle-gpu
+pip install --pre paddlepaddle-gpu -i https://www.paddlepaddle.org.cn/packages/nightly/cu118/
+
+# install paddle-scatter
+pip install git+https://github.com/PFCCLab/paddle_scatter.git
+
+# install paddle-sparse
+git submodule update --init --recursive
+python setup.py install
+```
+
+## **Unit Test**
+
+Please make sure you have installed paddle-sparse correctly before running unit tests
+
+```bash
+pip install pytest
+pytest
+```
+
+## **Support Matrix**
+
+**NOTE:  Paddle-sparse support 98/119 APIs in pytorch-sparse currently. The following table list the APIs not be supported by paddle-sparse now.**
+
+| method                                  | Comment                                                  |
+| --------------------------------------- | -------------------------------------------------------- |
+| SparseTensor.sum                        | Support later                                            |
+| SparseTensor.mean                       | Support later                                            |
+| SparseTensor.min                        | Support later                                            |
+| SparseTensor.max                        | Support later                                            |
+| SparseTensor.spmm                       | Support later                                            |
+| SparseTensor.spspmm                     | Support later                                            |
+| SparseTensor.matmul                     | Support later                                            |
+| SparseTensor.\__matmul__                | Support later                                            |
+| SparseTensor.random_walk                | Support later                                            |
+| SparseTensor.partition                  | Support later                                            |
+| SparseTensor.reverse_cuthill_mckee      | Support later                                            |
+| SparseTensor.saint_subgraph             | Support later                                            |
+| SparseTensor.sample                     | Support later                                            |
+| SparseTensor.sample_adj                 | Support later                                            |
+| SparseTensor.remove_diag                | Support later                                            |
+| SparseTensor.set_diag                   | Support later                                            |
+| SparseTensor.fill_diag                  | Support later                                            |
+| SparseTensor.get_diag                   | Support later                                            |
+| SparseTensor.share_memory_              | Callable but is trivial. Limitation of Paddle framework. |
+| SparseTensor.is_shared                  | Callable but is trivial. Limitation of Paddle framework. |
+| SparseTensor.to_torch_sparse_csc_tensor | Not support. Limitation of Paddle framework              |
+
+
+
+
+# Below is PyTorch Sparse's original README
+
 [pypi-image]: https://badge.fury.io/py/torch-sparse.svg
 [pypi-url]: https://pypi.python.org/pypi/torch-sparse
 [testing-image]: https://github.com/rusty1s/pytorch_sparse/actions/workflows/testing.yml/badge.svg
