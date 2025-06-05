@@ -37,6 +37,7 @@ from .masked_select import masked_select, masked_select_nnz  # noqa
 from .permute import permute  # noqa
 from .add import add, add_, add_nnz, add_nnz_  # noqa
 from .mul import mul, mul_, mul_nnz, mul_nnz_  # noqa
+from .cat import cat  # noqa
 
 from .convert import to_paddle_sparse, from_paddle_sparse  # noqa
 from .convert import to_scipy, from_scipy  # noqa
@@ -63,6 +64,7 @@ __all__ = [
     "mul_",
     "mul_nnz",
     "mul_nnz_",
+    "cat",
     "to_paddle_sparse",
     "from_paddle_sparse",
     "to_scipy",
