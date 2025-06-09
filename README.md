@@ -37,14 +37,10 @@ pytest
 
 ## **Support Matrix**
 
-**NOTE:  Paddle-sparse support 98/119 APIs in pytorch-sparse currently. The following table list the APIs not be supported by paddle-sparse now.**
+**NOTE:  Paddle-sparse support 102/119 APIs in pytorch-sparse currently. The following table list the APIs not be supported by paddle-sparse now.**
 
 | method                                  | Comment                                                  |
 | --------------------------------------- | -------------------------------------------------------- |
-| SparseTensor.sum                        | Support later                                            |
-| SparseTensor.mean                       | Support later                                            |
-| SparseTensor.min                        | Support later                                            |
-| SparseTensor.max                        | Support later                                            |
 | SparseTensor.spmm                       | Support later                                            |
 | SparseTensor.spspmm                     | Support later                                            |
 | SparseTensor.matmul                     | Support later                                            |
