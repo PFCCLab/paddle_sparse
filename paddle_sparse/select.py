@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from paddle_sparse.narrow import narrow
 from paddle_sparse.tensor import SparseTensor
 

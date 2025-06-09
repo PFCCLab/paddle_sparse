@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from textwrap import indent
 from typing import Any
 from typing import Dict
