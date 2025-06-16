@@ -127,15 +127,16 @@ def get_extensions():
     return extension
 
 
-setup(
-    name="paddle_sparse_ops",
-    version=__version__,
-    description=(
-        "Paddle Custom Operators Extension Library of Optimized Autograd Sparse "
-        "Matrix Operations. "
-    ),
-    author="Ruibin Cheung",
-    author_email="beinggod@foxmail.com",
-    python_requires=">=3.8",
-    ext_modules=get_extensions(),
-)
+if __name__ == "__main__":
+    setup(
+        name="paddle_sparse_ops",
+        version=__version__,
+        description=(
+            "Paddle Custom Operators Extension Library of Optimized Autograd Sparse "
+            "Matrix Operations. "
+        ),
+        author="Ruibin Cheung",
+        author_email="beinggod@foxmail.com",
+        python_requires=">=3.8",
+        ext_modules=get_extensions(),
+    )
