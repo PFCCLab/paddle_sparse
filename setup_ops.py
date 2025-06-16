@@ -2,6 +2,7 @@ import glob
 import os
 import os.path as osp
 import platform
+import re
 from itertools import product
 
 import paddle
@@ -10,7 +11,19 @@ from paddle.utils.cpp_extension import CUDAExtension
 from paddle.utils.cpp_extension import setup
 from paddle.utils.cpp_extension.cpp_extension import CUDA_HOME
 
-__version__ = "0.6.18"
+
+def get_version():
+    current_dir = osp.dirname(osp.abspath(__file__))
+    with open(osp.join(current_dir, "paddle_sparse/__init__.py")) as f:
+        content = f.read()
+    version_match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', content)
+    if version_match:
+        return version_match.group(1)
+
+    raise RuntimeError("Cannot find __version__ in paddle_sparse/__init__.py")
+
+
+__version__ = get_version()
 
 
 WITH_CUDA = False

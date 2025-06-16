@@ -14,6 +14,11 @@ np.random.seed(1234)
 @pytest.mark.parametrize("dtype,device", product(grad_dtypes, devices))
 def test_getitem(dtype, device):
     device = str(device)[6:-1]
+    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
+        pytest.skip(
+            reason="Paddle gather_nd CPU kernel not support float16 and bfloat16 dtype."
+        )
+
     paddle.device.set_device(device)
 
     m = 50
