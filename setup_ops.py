@@ -38,10 +38,25 @@ assert (
 assert platform.system() == "Linux", "Only support build on linux now."
 
 
+def set_cuda_archs():
+    major, _ = paddle.version.cuda_version.split(".")
+    if int(major) >= 12:
+        paddle_known_gpu_archs = [50, 60, 61, 70, 75, 80, 90]
+    elif int(major) >= 11:
+        paddle_known_gpu_archs = [50, 60, 61, 70, 75, 80]
+    if int(major) >= 10:
+        paddle_known_gpu_archs = [50, 52, 60, 61, 70, 75]
+    else:
+        raise ValueError("Not support cuda version.")
+
+    os.environ["PADDLE_CUDA_ARCH_LIST"] = ",".join(
+        [str(arch) for arch in paddle_known_gpu_archs]
+    )
+
+
 def get_extensions():
     extensions_dir = osp.join("csrc")
     main_files = glob.glob(osp.join(extensions_dir, "*.cpp"))
-    # remove generated 'hip' files, in case of rebuilds
     main_files = [path for path in main_files]
 
     define_macros = [("WITH_PYTHON", None)]
@@ -63,6 +78,7 @@ def get_extensions():
 
     extra_compile_args = {"cxx": ["-O3", "-Wno-sign-compare", "-fopenmp"]}
     if "cuda" in suffices:
+        set_cuda_archs()
         define_macros += [("WITH_CUDA", None)]
         nvcc_flags = os.getenv("NVCC_FLAGS", "")
         nvcc_flags = [] if nvcc_flags == "" else nvcc_flags.split(" ")
