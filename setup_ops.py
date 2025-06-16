@@ -44,7 +44,7 @@ def set_cuda_archs():
         paddle_known_gpu_archs = [50, 60, 61, 70, 75, 80, 90]
     elif int(major) >= 11:
         paddle_known_gpu_archs = [50, 60, 61, 70, 75, 80]
-    if int(major) >= 10:
+    elif int(major) >= 10:
         paddle_known_gpu_archs = [50, 52, 60, 61, 70, 75]
     else:
         raise ValueError("Not support cuda version.")
