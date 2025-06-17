@@ -44,7 +44,7 @@ pytest
 | SparseTensor.spmm                       | Support later                                            |
 | SparseTensor.spspmm                     | Support later                                            |
 | SparseTensor.matmul                     | Support later                                            |
-| SparseTensor.\__matmul__                | Support later                                            |
+| SparseTensor.\_\_matmul\_\_                | Support later                                            |
 | SparseTensor.random_walk                | Support later                                            |
 | SparseTensor.partition                  | Support later                                            |
 | SparseTensor.reverse_cuthill_mckee      | Support later                                            |
