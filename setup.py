@@ -7,8 +7,9 @@ from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
-__version__ = "0.6.18"
+from setup_ops import get_version
 
+__version__ = get_version()
 
 install_requires = [
     "scipy",
@@ -50,30 +51,32 @@ include_package_data = True
 if paddle.device.cuda.device_count() > 0:
     include_package_data = False
 
-setup(
-    name="paddle_sparse",
-    version=__version__,
-    description=(
-        "Paddle Extension Library of Optimized Autograd Sparse "
-        "Matrix Operations. Originally from https://github.com/rusty1s/pytorch_sparse."
-    ),
-    author="Ruibin Cheung",
-    author_email="beinggod@foxmail.com",
-    keywords=[
-        "paddlepaddle",
-        "sparse",
-        "sparse-matrices",
-        "autograd",
-    ],
-    python_requires=">=3.8",
-    install_requires=install_requires,
-    extras_require={
-        "test": test_requires,
-    },
-    cmdclass={
-        "install": CustomInstallCommand,
-        "develop": CustomDevelopCommand,
-    },
-    packages=find_packages(),
-    include_package_data=include_package_data,
-)
+
+if __name__ == "__main__":
+    setup(
+        name="paddle_sparse",
+        version=__version__,
+        description=(
+            "Paddle Extension Library of Optimized Autograd Sparse "
+            "Matrix Operations. Originally from https://github.com/rusty1s/pytorch_sparse."
+        ),
+        author="Ruibin Cheung",
+        author_email="beinggod@foxmail.com",
+        keywords=[
+            "paddlepaddle",
+            "sparse",
+            "sparse-matrices",
+            "autograd",
+        ],
+        python_requires=">=3.8",
+        install_requires=install_requires,
+        extras_require={
+            "test": test_requires,
+        },
+        cmdclass={
+            "install": CustomInstallCommand,
+            "develop": CustomDevelopCommand,
+        },
+        packages=find_packages(),
+        include_package_data=include_package_data,
+    )

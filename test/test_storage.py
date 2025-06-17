@@ -1,5 +1,6 @@
 from itertools import product
 
+import numpy as np
 import paddle
 import paddle_sparse_ops
 import pytest
@@ -33,6 +34,11 @@ def test_ind2ptr(device):
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_storage(dtype, device):
     device = str(device)[6:-1]
+    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
+        pytest.skip(
+            reason="Paddle gather_nd CPU kernel not support float16 and bfloat16 dtype."
+        )
+
     paddle.device.set_device(device)
 
     row, col = tensor([[0, 0, 1, 1], [0, 1, 0, 1]], paddle.int64, device)
@@ -48,7 +54,11 @@ def test_storage(dtype, device):
     storage = SparseStorage(row=row, col=col, value=value)
     assert storage.row().tolist() == [0, 0, 1, 1]
     assert storage.col().tolist() == [0, 1, 0, 1]
-    assert storage.value().tolist() == [1, 2, 3, 4]
+    # NOTE(beinggod): paddle.Tensor.tolist will interpret bf16 tensor as uint16. We should construct a paddle.Tensor to workaround it.
+    np.testing.assert_array_equal(
+        storage.value().numpy(),
+        paddle.to_tensor([1, 2, 3, 4], dtype=dtype, place=device).numpy(),
+    )
     assert storage.sparse_sizes() == (2, 2)
 
 
@@ -113,6 +123,11 @@ def test_caching(dtype, device):
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_utility(dtype, device):
     device = str(device)[6:-1]
+    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
+        pytest.skip(
+            reason="Paddle gather_nd CPU kernel not support float16 and bfloat16 dtype."
+        )
+
     paddle.device.set_device(device)
 
     row, col = tensor([[0, 0, 1, 1], [1, 0, 1, 0]], paddle.int64, device)
@@ -122,14 +137,27 @@ def test_utility(dtype, device):
     assert storage.has_value()
 
     storage.set_value_(value, layout="csc")
-    assert storage.value().tolist() == [1, 3, 2, 4]
+    # NOTE(beinggod): paddle.Tensor.tolist will interpret bf16 tensor as uint16. We should construct a paddle.Tensor to workaround it.
+    np.testing.assert_array_equal(
+        storage.value().numpy(),
+        paddle.to_tensor([1, 3, 2, 4], dtype=dtype, place=device).numpy(),
+    )
     storage.set_value_(value, layout="coo")
-    assert storage.value().tolist() == [1, 2, 3, 4]
+    np.testing.assert_array_equal(
+        storage.value().numpy(),
+        paddle.to_tensor([1, 2, 3, 4], dtype=dtype, place=device).numpy(),
+    )
 
     storage = storage.set_value(value, layout="csc")
-    assert storage.value().tolist() == [1, 3, 2, 4]
+    np.testing.assert_array_equal(
+        storage.value().numpy(),
+        paddle.to_tensor([1, 3, 2, 4], dtype=dtype, place=device).numpy(),
+    )
     storage = storage.set_value(value, layout="coo")
-    assert storage.value().tolist() == [1, 2, 3, 4]
+    np.testing.assert_array_equal(
+        storage.value().numpy(),
+        paddle.to_tensor([1, 2, 3, 4], dtype=dtype, place=device).numpy(),
+    )
 
     storage = storage.sparse_resize((3, 3))
     assert storage.sparse_sizes() == (3, 3)
@@ -146,6 +174,11 @@ def test_utility(dtype, device):
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_coalesce(dtype, device):
     device = str(device)[6:-1]
+    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
+        pytest.skip(
+            reason="Paddle segment_csr_cpu_forward_kernel not support float16 and bfloat16 dtype."
+        )
+
     paddle.device.set_device(device)
 
     row, col = tensor([[0, 0, 0, 1, 1], [0, 1, 1, 0, 1]], paddle.int64, device)
@@ -162,12 +195,21 @@ def test_coalesce(dtype, device):
 
     assert storage.row().tolist() == [0, 0, 1, 1]
     assert storage.col().tolist() == [0, 1, 0, 1]
-    assert storage.value().tolist() == [1, 2, 3, 4]
+    # NOTE(beinggod): paddle.Tensor.tolist will interpret bf16 tensor as uint16. We should construct a paddle.Tensor to workaround it.
+    np.testing.assert_array_equal(
+        storage.value().numpy(),
+        paddle.to_tensor([1, 2, 3, 4], dtype=dtype, place=device).numpy(),
+    )
 
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_sparse_reshape(dtype, device):
     device = str(device)[6:-1]
+    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
+        pytest.skip(
+            reason="Paddle segment_csr_cpu_forward_kernel not support float16 and bfloat16 dtype."
+        )
+
     paddle.device.set_device(device)
 
     row, col = tensor([[0, 1, 2, 3], [0, 1, 2, 3]], paddle.int64, device)
