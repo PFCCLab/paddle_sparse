@@ -99,23 +99,23 @@ def get_extensions():
         nvcc_flags += ["--expt-relaxed-constexpr"]
         extra_compile_args["nvcc"] = nvcc_flags
 
+    sources = set()
     for main, suffix in product(main_files, suffices):
         name = main.split(os.sep)[-1][:-4]
-        sources = [main]
+        sources.add(main)
 
         path = osp.join(extensions_dir, "cpu", f"{name}_cpu.cpp")
         if osp.exists(path):
-            sources += [path]
+            sources.add(path)
 
         path = osp.join(extensions_dir, "cuda", f"{name}_cuda.cu")
         if suffix == "cuda" and osp.exists(path):
-            sources += [path]
+            sources.add(path)
 
     phmap_dir = osp.abspath("third_party/parallel-hashmap")
-
     Extension = CUDAExtension if "cuda" in suffices else CppExtension
     extension = Extension(
-        sources,
+        list(sources),
         include_dirs=[extensions_dir, phmap_dir],
         define_macros=define_macros,
         undef_macros=undef_macros,

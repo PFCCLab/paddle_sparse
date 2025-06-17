@@ -1,5 +1,7 @@
 import os.path as osp
 
+import paddle
+
 
 __version__ = "0.6.18"
 
@@ -11,22 +13,23 @@ except ImportError:
         f"Please run `python setup_ops.py install` manually."
     )
 
-# TODO(beinggod): Add version check
-# cuda_version = torch.ops.torch_sparse.cuda_version()
-# if torch.version.cuda is not None and cuda_version != -1:  # pragma: no cover
-#     if cuda_version < 10000:
-#         major, minor = int(str(cuda_version)[0]), int(str(cuda_version)[2])
-#     else:
-#         major, minor = int(str(cuda_version)[0:2]), int(str(cuda_version)[3])
-#     t_major, t_minor = [int(x) for x in torch.version.cuda.split('.')]
 
-#     if t_major != major:
-#         raise RuntimeError(
-#             f'Detected that PyTorch and torch_sparse were compiled with '
-#             f'different CUDA versions. PyTorch has CUDA version '
-#             f'{t_major}.{t_minor} and torch_sparse has CUDA version '
-#             f'{major}.{minor}. Please reinstall the torch_sparse that '
-#             f'matches your PyTorch install.')
+cuda_version = paddle_sparse_ops.cuda_version().item()
+if paddle.version.cuda_version is not None and cuda_version != -1:  # pragma: no cover
+    if cuda_version < 10000:
+        major, minor = int(str(cuda_version)[0]), int(str(cuda_version)[2])
+    else:
+        major, minor = int(str(cuda_version)[0:2]), int(str(cuda_version)[3])
+    t_major, t_minor = [int(x) for x in paddle.version.cuda_version.split(".")]
+
+    if t_major != major:
+        raise RuntimeError(
+            f"Detected that Paddle and paddle_sparse were compiled with "
+            f"different CUDA versions. Paddle has CUDA version "
+            f"{t_major}.{t_minor} and paddle_sparse has CUDA version "
+            f"{major}.{minor}. Please reinstall the paddle_sparse that "
+            f"matches your Paddle install."
+        )
 
 from .storage import SparseStorage  # noqa
 from .tensor import SparseTensor  # noqa
