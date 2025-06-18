@@ -92,54 +92,54 @@ class SparseStorage(object):
 
         if row is not None:
             assert row.dtype == paddle.int64
-            assert row.place == col.place
+            assert str(row.place) == str(col.place)
             assert row.dim() == 1
             assert row.numel() == col.numel()
             row = row.contiguous()
 
         if rowptr is not None:
             assert rowptr.dtype == paddle.int64
-            assert rowptr.place == col.place
+            assert str(rowptr.place) == str(col.place)
             assert rowptr.dim() == 1
             assert rowptr.numel() - 1 == sparse_sizes[0]
             rowptr = rowptr.contiguous()
 
         if value is not None:
-            assert value.place == col.place
+            assert str(value.place) == str(col.place)
             assert value.shape[0] == col.shape[0]
             value = value.contiguous()
 
         if rowcount is not None:
             assert rowcount.dtype == paddle.int64
-            assert rowcount.place == col.place
+            assert str(rowcount.place) == str(col.place)
             assert rowcount.dim() == 1
             assert rowcount.numel() == sparse_sizes[0]
             rowcount = rowcount.contiguous()
 
         if colptr is not None:
             assert colptr.dtype == paddle.int64
-            assert colptr.place == col.place
+            assert str(colptr.place) == str(col.place)
             assert colptr.dim() == 1
             assert colptr.numel() - 1 == sparse_sizes[1]
             colptr = colptr.contiguous()
 
         if colcount is not None:
             assert colcount.dtype == paddle.int64
-            assert colcount.place == col.place
+            assert str(colcount.place) == str(col.place)
             assert colcount.dim() == 1
             assert colcount.numel() == sparse_sizes[1]
             colcount = colcount.contiguous()
 
         if csr2csc is not None:
             assert csr2csc.dtype == paddle.int64
-            assert csr2csc.place == col.place
+            assert str(csr2csc.place) == str(col.place)
             assert csr2csc.dim() == 1
             assert csr2csc.numel() == col.shape[0]
             csr2csc = csr2csc.contiguous()
 
         if csc2csr is not None:
             assert csc2csr.dtype == paddle.int64
-            assert csc2csr.place == col.place
+            assert str(csc2csr.place) == str(col.place)
             assert csc2csr.dim() == 1
             assert csc2csr.numel() == col.shape[0]
             csc2csr = csc2csr.contiguous()
@@ -239,7 +239,7 @@ class SparseStorage(object):
             if get_layout(layout) == "csc":
                 value = value[self.csc2csr()]
             value = value.contiguous()
-            assert value.place == self._col.place
+            assert str(value.place) == str(self._col.place)
             assert value.shape[0] == self._col.numel()
 
         self._value = value
@@ -254,7 +254,7 @@ class SparseStorage(object):
             if get_layout(layout) == "csc":
                 value = value[self.csc2csr()]
             value = value.contiguous()
-            assert value.place == self._col.place
+            assert str(value.place) == str(self._col.place)
             assert value.shape[0] == self._col.numel()
 
         return SparseStorage(
@@ -647,7 +647,7 @@ class SparseStorage(object):
 
     def cuda(self):
         new_col = self._col.cuda()
-        if new_col.place == self._col.place:
+        if str(new_col.place) == str(self._col.place):
             return self
 
         row = self._row
