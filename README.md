@@ -19,10 +19,13 @@ pip uninstall paddlepaddle-gpu
 pip install --pre paddlepaddle-gpu -i https://www.paddlepaddle.org.cn/packages/nightly/cu118/
 
 # install paddle-scatter
-pip install git+https://github.com/PFCCLab/paddle_scatter.git
+git clone https://github.com/PFCCLab/paddle_scatter.git
+cd paddle_scatter
+python setup.py install
 
 # install paddle-sparse
-git submodule update --init --recursive
+git clone https://github.com/PFCCLab/paddle_sparse.git --recursive
+cd paddle_sparse
 python setup.py install
 ```
 

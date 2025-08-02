@@ -20,6 +20,11 @@ test_requires = [
     "pytest-cov",
 ]
 
+support_commands = ("install", "develop")
+assert (
+    sys.argv[1] in support_commands
+), f"paddle-cluster setup.py only support {support_commands} commands."
+
 
 class CustomCommand:
     """Common functionality for install and develop commands"""
