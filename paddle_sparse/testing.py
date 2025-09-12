@@ -4,6 +4,7 @@ from typing import Any
 
 import paddle
 import paddle_scatter
+import pytest
 from packaging import version
 
 reductions = ["sum", "add", "mean", "min", "max"]
@@ -22,3 +23,14 @@ if paddle.device.cuda.device_count() > 0:
 
 def tensor(x: Any, dtype: paddle.dtype, device: paddle.base.libpaddle.Place):
     return None if x is None else paddle.to_tensor(x, dtype=dtype, place=device)
+
+
+def maybe_skip_testing(dtype: paddle.dtype, device: paddle.base.libpaddle.Place):
+    device = str(device)[6:-1]
+    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
+        pytest.skip()
+
+
+def set_testing_device(device: paddle.base.libpaddle.Place):
+    device = str(device)[6:-1]
+    paddle.device.set_device(device)

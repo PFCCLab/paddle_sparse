@@ -4,12 +4,13 @@ import pytest
 from paddle_sparse.cat import cat
 from paddle_sparse.tensor import SparseTensor
 from paddle_sparse.testing import devices
+from paddle_sparse.testing import set_testing_device
 from paddle_sparse.testing import tensor
 
 
 @pytest.mark.parametrize("device", devices)
 def test_cat(device):
-    paddle.device.set_device(str(device)[6:-1])
+    set_testing_device(device)
 
     row, col = tensor([[0, 0, 1], [0, 1, 2]], paddle.int64, device)
     mat1 = SparseTensor(row=row, col=col)

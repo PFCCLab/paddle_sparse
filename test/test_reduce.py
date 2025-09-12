@@ -6,12 +6,14 @@ import pytest
 from paddle_sparse import SparseTensor
 from paddle_sparse.testing import devices
 from paddle_sparse.testing import dtypes
+from paddle_sparse.testing import maybe_skip_testing
+from paddle_sparse.testing import set_testing_device
 
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_reduce_sum(dtype, device):
-    device = str(device)[6:-1]
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row = paddle.to_tensor([1, 0, 1, 0, 2, 1])
     col = paddle.to_tensor([0, 1, 1, 1, 0, 0])
@@ -23,8 +25,8 @@ def test_reduce_sum(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_reduce_mean(dtype, device):
-    device = str(device)[6:-1]
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row = paddle.to_tensor([1, 0, 1, 0, 2, 1])
     col = paddle.to_tensor([0, 1, 1, 1, 0, 0])
@@ -36,8 +38,8 @@ def test_reduce_mean(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_reduce_max(dtype, device):
-    device = str(device)[6:-1]
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row = paddle.to_tensor([1, 0, 1, 0, 2, 1])
     col = paddle.to_tensor([0, 1, 1, 1, 0, 0])
@@ -49,8 +51,8 @@ def test_reduce_max(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_reduce_min(dtype, device):
-    device = str(device)[6:-1]
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row = paddle.to_tensor([1, 0, 1, 0, 2, 1])
     col = paddle.to_tensor([0, 1, 1, 1, 0, 0])

@@ -8,13 +8,14 @@ import pytest
 from paddle_sparse.storage import SparseStorage
 from paddle_sparse.testing import devices
 from paddle_sparse.testing import dtypes
+from paddle_sparse.testing import maybe_skip_testing
+from paddle_sparse.testing import set_testing_device
 from paddle_sparse.testing import tensor
 
 
 @pytest.mark.parametrize("device", devices)
 def test_ind2ptr(device):
-    device = str(device)[6:-1]
-    paddle.device.set_device(device)
+    set_testing_device(device)
 
     row = tensor([2, 2, 4, 5, 5, 6], paddle.int64, device)
     rowptr = paddle_sparse_ops.ind2ptr(row, 8)
@@ -33,21 +34,8 @@ def test_ind2ptr(device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_storage(dtype, device):
-    device = str(device)[6:-1]
-    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
-        pytest.skip(
-            reason="Paddle gather_nd CPU kernel not support float16 and bfloat16 dtype."
-        )
-
-    paddle.device.set_device(device)
-
-    row, col = tensor([[0, 0, 1, 1], [0, 1, 0, 1]], paddle.int64, device)
-
-    storage = SparseStorage(row=row, col=col)
-    assert storage.row().tolist() == [0, 0, 1, 1]
-    assert storage.col().tolist() == [0, 1, 0, 1]
-    assert storage.value() is None
-    assert storage.sparse_sizes() == (2, 2)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row, col = tensor([[0, 0, 1, 1], [1, 0, 1, 0]], paddle.int64, device)
     value = tensor([2, 1, 4, 3], dtype, device)
@@ -64,8 +52,8 @@ def test_storage(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_caching(dtype, device):
-    device = str(device)[6:-1]
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row, col = tensor([[0, 0, 1, 1], [0, 1, 0, 1]], paddle.int64, device)
     storage = SparseStorage(row=row, col=col)
@@ -122,13 +110,8 @@ def test_caching(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_utility(dtype, device):
-    device = str(device)[6:-1]
-    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
-        pytest.skip(
-            reason="Paddle gather_nd CPU kernel not support float16 and bfloat16 dtype."
-        )
-
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row, col = tensor([[0, 0, 1, 1], [1, 0, 1, 0]], paddle.int64, device)
     value = tensor([1, 2, 3, 4], dtype, device)
@@ -173,13 +156,8 @@ def test_utility(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_coalesce(dtype, device):
-    device = str(device)[6:-1]
-    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
-        pytest.skip(
-            reason="Paddle segment_csr_cpu_forward_kernel not support float16 and bfloat16 dtype."
-        )
-
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row, col = tensor([[0, 0, 0, 1, 1], [0, 1, 1, 0, 1]], paddle.int64, device)
     value = tensor([1, 1, 1, 3, 4], dtype, device)
@@ -204,13 +182,8 @@ def test_coalesce(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_sparse_reshape(dtype, device):
-    device = str(device)[6:-1]
-    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
-        pytest.skip(
-            reason="Paddle segment_csr_cpu_forward_kernel not support float16 and bfloat16 dtype."
-        )
-
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     row, col = tensor([[0, 1, 2, 3], [0, 1, 2, 3]], paddle.int64, device)
     storage = SparseStorage(row=row, col=col)

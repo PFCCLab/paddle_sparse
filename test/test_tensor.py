@@ -7,19 +7,16 @@ import pytest
 from paddle_sparse import SparseTensor
 from paddle_sparse.testing import devices
 from paddle_sparse.testing import grad_dtypes
+from paddle_sparse.testing import maybe_skip_testing
+from paddle_sparse.testing import set_testing_device
 
 np.random.seed(1234)
 
 
 @pytest.mark.parametrize("dtype,device", product(grad_dtypes, devices))
 def test_getitem(dtype, device):
-    device = str(device)[6:-1]
-    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
-        pytest.skip(
-            reason="Paddle gather_nd CPU kernel not support float16 and bfloat16 dtype."
-        )
-
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     m = 50
     n = 40
@@ -73,8 +70,7 @@ def test_getitem(dtype, device):
 
 @pytest.mark.parametrize("device", devices)
 def test_to_symmetric(device):
-    device = str(device)[6:-1]
-    paddle.device.set_device(str(device))
+    set_testing_device(device)
 
     row = paddle.to_tensor([0, 0, 0, 1, 1])
     col = paddle.to_tensor([0, 1, 2, 0, 2])

@@ -3,13 +3,13 @@ import pytest
 
 from paddle_sparse.tensor import SparseTensor
 from paddle_sparse.testing import devices
+from paddle_sparse.testing import set_testing_device
 from paddle_sparse.testing import tensor
 
 
 @pytest.mark.parametrize("device", devices)
 def test_permute(device):
-    device = str(device)[6:-1]
-    paddle.device.set_device(device)
+    set_testing_device(device)
 
     row, col = tensor([[0, 0, 1, 2, 2], [0, 1, 0, 1, 2]], paddle.int64, device)
     value = tensor([1, 2, 3, 4, 5], paddle.float32, device)

@@ -7,20 +7,17 @@ import pytest
 from paddle_sparse.tensor import SparseTensor
 from paddle_sparse.testing import devices
 from paddle_sparse.testing import dtypes
+from paddle_sparse.testing import maybe_skip_testing
+from paddle_sparse.testing import set_testing_device
 
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_eye(dtype, device):
-    device = str(device)[6:-1]
-    if device == "cpu" and dtype in [paddle.float16, paddle.bfloat16]:
-        pytest.skip(
-            reason="Paddle gather_nd CPU kernel not support float16 and bfloat16 dtype."
-        )
-
-    paddle.device.set_device(device)
+    maybe_skip_testing(dtype, device)
+    set_testing_device(device)
 
     mat = SparseTensor.eye(3, dtype=dtype, device=device)
-    assert str(mat.device())[6:-1] == device
+    assert str(mat.device()) == str(device)
     assert mat.storage.sparse_sizes() == (3, 3)
     assert mat.storage.row().tolist() == [0, 1, 2]
     assert mat.storage.rowptr().tolist() == [0, 1, 2, 3]
@@ -34,7 +31,7 @@ def test_eye(dtype, device):
     assert mat.storage.num_cached_keys() == 0
 
     mat = SparseTensor.eye(3, has_value=False, device=device)
-    assert str(mat.device())[6:-1] == str(device)
+    assert str(mat.device()) == str(device)
     assert mat.storage.sparse_sizes() == (3, 3)
     assert mat.storage.row().tolist() == [0, 1, 2]
     assert mat.storage.rowptr().tolist() == [0, 1, 2, 3]
@@ -43,7 +40,7 @@ def test_eye(dtype, device):
     assert mat.storage.num_cached_keys() == 0
 
     mat = SparseTensor.eye(3, 4, fill_cache=True, device=device)
-    assert str(mat.device())[6:-1] == str(device)
+    assert str(mat.device()) == str(device)
     assert mat.storage.sparse_sizes() == (3, 4)
     assert mat.storage.row().tolist() == [0, 1, 2]
     assert mat.storage.rowptr().tolist() == [0, 1, 2, 3]
@@ -56,7 +53,7 @@ def test_eye(dtype, device):
     assert mat.storage.csc2csr().tolist() == [0, 1, 2]
 
     mat = SparseTensor.eye(4, 3, fill_cache=True, device=device)
-    assert str(mat.device())[6:-1] == str(device)
+    assert str(mat.device()) == str(device)
     assert mat.storage.sparse_sizes() == (4, 3)
     assert mat.storage.row().tolist() == [0, 1, 2]
     assert mat.storage.rowptr().tolist() == [0, 1, 2, 3, 3]
