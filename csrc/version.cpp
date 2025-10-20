@@ -11,7 +11,7 @@
 #include "macros.h"
 
 
-SPARSE_API std::vector<paddle::Tensor> cuda_version() {
+SPARSE_API std::vector<paddle::Tensor> sparse_cuda_version() {
   auto cpu_place = paddle::CPUPlace();
 #ifdef WITH_CUDA
   int64_t version = CUDA_VERSION;
@@ -22,19 +22,19 @@ SPARSE_API std::vector<paddle::Tensor> cuda_version() {
 }
 
 
-std::vector<paddle::DataType> cuda_version_infer_dtype() {
+std::vector<paddle::DataType> sparse_cuda_version_infer_dtype() {
   return {paddle::DataType::INT64};
 }
 
 
-std::vector<std::vector<int64_t>> cuda_version_infer_shape(int64_t M) {
+std::vector<std::vector<int64_t>> sparse_cuda_version_infer_shape(int64_t M) {
   return {{1}};
 }
 
 
-PD_BUILD_OP(cuda_version)
+PD_BUILD_OP(sparse_cuda_version)
     .Inputs({})
     .Outputs({"out"})
-    .SetKernelFn(PD_KERNEL(cuda_version))
-    .SetInferShapeFn(PD_INFER_SHAPE(cuda_version_infer_shape))
-    .SetInferDtypeFn(PD_INFER_DTYPE(cuda_version_infer_dtype));
+    .SetKernelFn(PD_KERNEL(sparse_cuda_version))
+    .SetInferShapeFn(PD_INFER_SHAPE(sparse_cuda_version_infer_shape))
+    .SetInferDtypeFn(PD_INFER_DTYPE(sparse_cuda_version_infer_dtype));

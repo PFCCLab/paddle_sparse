@@ -14,7 +14,7 @@ except ImportError:
     )
 
 
-cuda_version = paddle_sparse_ops.cuda_version().item()
+cuda_version = paddle_sparse_ops.sparse_cuda_version().item()
 if paddle.version.cuda_version is not None and cuda_version != -1:  # pragma: no cover
     if cuda_version < 10000:
         major, minor = int(str(cuda_version)[0]), int(str(cuda_version)[2])
