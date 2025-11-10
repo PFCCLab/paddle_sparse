@@ -40,7 +40,7 @@ pytest
 
 ## **Support Matrix**
 
-**NOTE:  Paddle-sparse support 102/119 APIs in pytorch-sparse currently. The following table list the APIs not be supported by paddle-sparse now.**
+**NOTE:  Paddle-sparse support 104/119 APIs in pytorch-sparse currently. The following table list the APIs not be supported by paddle-sparse now.**
 
 | method                                  | Comment                                                  |
 | --------------------------------------- | -------------------------------------------------------- |
@@ -52,8 +52,6 @@ pytest
 | SparseTensor.partition                  | Support later                                            |
 | SparseTensor.reverse_cuthill_mckee      | Support later                                            |
 | SparseTensor.saint_subgraph             | Support later                                            |
-| SparseTensor.sample                     | Support later                                            |
-| SparseTensor.sample_adj                 | Support later                                            |
 | SparseTensor.remove_diag                | Support later                                            |
 | SparseTensor.set_diag                   | Support later                                            |
 | SparseTensor.fill_diag                  | Support later                                            |
