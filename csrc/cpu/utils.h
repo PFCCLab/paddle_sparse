@@ -18,3 +18,17 @@
       return __VA_ARGS__();                        \
     }                                              \
   }()
+
+inline int64_t uniform_randint(int64_t low,
+                               int64_t high,
+                               const paddle::Place &place) {
+  CHECK_LT(low, high);
+  auto ret = paddle::experimental::randint(
+      low, high, {1}, paddle::DataType::INT64, place);
+  auto ptr = ret.data<int64_t>();
+  return *ptr;
+}
+
+inline int64_t uniform_randint(int64_t high, const paddle::Place &place) {
+  return uniform_randint(0, high, place);
+}
