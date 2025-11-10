@@ -7,7 +7,6 @@
 #endif
 
 // Returns `rowptr`, `col`, `n_id`, `e_id`
-
 std::tuple<paddle::Tensor, paddle::Tensor, paddle::Tensor, paddle::Tensor>
 sample_adj_cpu(paddle::Tensor rowptr,
                paddle::Tensor col,
@@ -33,7 +32,7 @@ sample_adj_cpu(paddle::Tensor rowptr,
   std::unordered_map<int64_t, int64_t> n_id_map;
 
   int64_t i;
-  for (int64_t n = 0; n < idx.numel(); n++) {
+  for (int64_t n = 0, sz = idx.numel(); n < sz; ++n) {
     i = idx_data[n];
     cols.push_back(std::vector<std::tuple<int64_t, int64_t>>());
     n_id_map[i] = n;
@@ -42,10 +41,10 @@ sample_adj_cpu(paddle::Tensor rowptr,
 
   int64_t n, c, e, row_start, row_end, row_count;
 
-  if (num_neighbors <
-      0) {  // No sampling ======================================
+  if (num_neighbors < 0) {
+    // No sampling ======================================
 
-    for (int64_t i = 0; i < idx.numel(); i++) {
+    for (int64_t i = 0, sz = idx.numel(); i < sz; ++i) {
       n = idx_data[i];
       row_start = rowptr_data[n], row_end = rowptr_data[n + 1];
       row_count = row_end - row_start;
@@ -67,7 +66,7 @@ sample_adj_cpu(paddle::Tensor rowptr,
   else if (replace) {  // Sample with replacement
                        // ===============================
 
-    for (int64_t i = 0; i < idx.numel(); i++) {
+    for (int64_t i = 0, sz = idx.numel(); i < sz; ++i) {
       n = idx_data[i];
       row_start = rowptr_data[n], row_end = rowptr_data[n + 1];
       row_count = row_end - row_start;
@@ -90,7 +89,7 @@ sample_adj_cpu(paddle::Tensor rowptr,
   } else {  // Sample without replacement via Robert Floyd algorithm
             // ============
 
-    for (int64_t i = 0; i < idx.numel(); i++) {
+    for (int64_t i = 0, sz = idx.numel(); i < sz; ++i) {
       n = idx_data[i];
       row_start = rowptr_data[n], row_end = rowptr_data[n + 1];
       row_count = row_end - row_start;
@@ -121,8 +120,6 @@ sample_adj_cpu(paddle::Tensor rowptr,
   }
 
   int64_t N = n_ids.size();
-  // auto out_n_id = paddle::from_blob(n_ids.data(), {N}, col.dtype(),
-  // col.place());
   auto out_n_id = paddle::empty({N}, col.dtype(), col.place());
   std::memcpy(out_n_id.data<int64_t>(), n_ids.data(), N * sizeof(int64_t));
 
@@ -148,5 +145,4 @@ sample_adj_cpu(paddle::Tensor rowptr,
   }
 
   return std::make_tuple(out_rowptr, out_col, out_n_id, out_e_id);
-  // return {out_rowptr, out_col, out_n_id, out_e_id};
 }

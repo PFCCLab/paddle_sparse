@@ -31,7 +31,7 @@ std::vector<paddle::DataType> sample_adj_infer_dtype(
   return {rowptr_dtype, col_dtype, col_dtype, col_dtype};
 }
 
-
+// NOTE: Ignore infer shape because output's shape is dynamic.
 PD_BUILD_OP(sample_adj)
     .Inputs({"rowptr", "col", "idx"})
     .Outputs({"out_rowptr", "out_col", "out_n_id", "out_e_id"})
