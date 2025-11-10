@@ -5,16 +5,6 @@
 
 #include "cpu/sample_cpu.h"
 
-// #ifdef _WIN32
-// #ifdef WITH_PYTHON
-// #ifdef WITH_CUDA
-// PyMODINIT_FUNC PyInit__sample_cuda(void) { return NULL; }
-// #else
-// PyMODINIT_FUNC PyInit__sample_cpu(void) { return NULL; }
-// #endif
-// #endif
-// #endif
-
 SPARSE_API std::vector<paddle::Tensor> sample_adj(paddle::Tensor &rowptr,
                                                   paddle::Tensor &col,
                                                   paddle::Tensor &idx,
@@ -27,12 +17,9 @@ SPARSE_API std::vector<paddle::Tensor> sample_adj(paddle::Tensor &rowptr,
     PD_THROW("Not compiled with CUDA support");
 #endif
   } else {
-    // PD_THROW("Not compiled with CPU support");
-    std::cout << "Basic GPU place initialization succeeded." << std::endl;
     auto ret = sample_adj_cpu(rowptr, col, idx, num_neighbors, replace);
     return {
         std::get<0>(ret), std::get<1>(ret), std::get<2>(ret), std::get<3>(ret)};
-    // return sample_adj_cpu(rowptr, col, idx, num_neighbors, replace);
   }
 }
 
