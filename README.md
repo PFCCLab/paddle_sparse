@@ -40,22 +40,15 @@ pytest
 
 ## **Support Matrix**
 
-**NOTE:  Paddle-sparse support 104/119 APIs in pytorch-sparse currently. The following table list the APIs not be supported by paddle-sparse now.**
+**NOTE:  Paddle-sparse support 112/119 APIs in pytorch-sparse currently. The following table list the APIs with limitations or not supported by paddle-sparse now.**
 
 | method                                  | Comment                                                  |
 | --------------------------------------- | -------------------------------------------------------- |
-| SparseTensor.spmm                       | Support later                                            |
-| SparseTensor.spspmm                     | Support later                                            |
-| SparseTensor.matmul                     | Support later                                            |
-| SparseTensor.\_\_matmul\_\_                | Support later                                            |
-| SparseTensor.random_walk                | Support later                                            |
-| SparseTensor.partition                  | Support later                                            |
-| SparseTensor.reverse_cuthill_mckee      | Support later                                            |
-| SparseTensor.saint_subgraph             | Support later                                            |
-| SparseTensor.remove_diag                | Support later                                            |
-| SparseTensor.set_diag                   | Support later                                            |
-| SparseTensor.fill_diag                  | Support later                                            |
-| SparseTensor.get_diag                   | Support later                                            |
+| SparseTensor.spmm                       | Supported. CPU: index_select不支持float16; GPU: matmul_coo_dense不支持bfloat16和int64 |
+| SparseTensor.spspmm                     | Supported. CPU: put_along_axis不支持bfloat16; GPU: matmul_coo_dense不支持bfloat16和int64 |
+| SparseTensor.matmul                     | Supported. CPU: index_select不支持float16; GPU: matmul_coo_dense不支持bfloat16和int64 |
+| SparseTensor.\_\_matmul\_\_                | Supported. CPU: index_select不支持float16; GPU: matmul_coo_dense不支持bfloat16和int64 |
+| SparseTensor.partition                  | Supported. Requires METIS library                       |
 | SparseTensor.share_memory_              | Callable but is trivial. Limitation of Paddle framework. |
 | SparseTensor.is_shared                  | Callable but is trivial. Limitation of Paddle framework. |
 | SparseTensor.to_torch_sparse_csc_tensor | Not support. Limitation of Paddle framework              |

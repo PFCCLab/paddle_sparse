@@ -10,12 +10,28 @@ from paddle_sparse.testing import grad_dtypes
 from paddle_sparse.testing import maybe_skip_testing
 from paddle_sparse.testing import set_testing_device
 
+
+def skip_if_cuda_incompatible(dtype, device):
+    """Skip test if CUDA device is not compatible with PaddlePaddle."""
+    maybe_skip_testing(dtype, device)
+    device_str = str(device)
+    if "gpu" in device_str.lower() or "cuda" in device_str.lower():
+        try:
+            original_device = paddle.device.get_device()
+            paddle.device.set_device(device_str)
+            test_tensor = paddle.to_tensor([1.0], dtype='float32')
+            _ = test_tensor + 1
+            if original_device:
+                paddle.device.set_device(original_device)
+        except Exception:
+            pytest.skip(f"CUDA device {device_str} not compatible with PaddlePaddle")
+
 np.random.seed(1234)
 
 
 @pytest.mark.parametrize("dtype,device", product(grad_dtypes, devices))
 def test_getitem(dtype, device):
-    maybe_skip_testing(dtype, device)
+    skip_if_cuda_incompatible(dtype, device)
     set_testing_device(device)
 
     m = 50
@@ -70,6 +86,7 @@ def test_getitem(dtype, device):
 
 @pytest.mark.parametrize("device", devices)
 def test_to_symmetric(device):
+    skip_if_cuda_incompatible(None, device)
     set_testing_device(device)
 
     row = paddle.to_tensor([0, 0, 0, 1, 1])
@@ -89,6 +106,7 @@ def test_to_symmetric(device):
 
 
 def test_equal():
+    paddle.device.set_device('cpu')
     row = paddle.to_tensor([0, 0, 0, 1, 1])
     col = paddle.to_tensor([0, 1, 2, 0, 2])
     value = paddle.arange(1, 6)

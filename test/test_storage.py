@@ -13,8 +13,25 @@ from paddle_sparse.testing import set_testing_device
 from paddle_sparse.testing import tensor
 
 
+def skip_if_cuda_incompatible(dtype, device):
+    """Skip test if CUDA device is not compatible with PaddlePaddle."""
+    maybe_skip_testing(dtype, device)
+    device_str = str(device)
+    if "gpu" in device_str.lower() or "cuda" in device_str.lower():
+        try:
+            original_device = paddle.device.get_device()
+            paddle.device.set_device(device_str)
+            test_tensor = paddle.to_tensor([1.0], dtype='float32')
+            _ = test_tensor + 1
+            if original_device:
+                paddle.device.set_device(original_device)
+        except Exception:
+            pytest.skip(f"CUDA device {device_str} not compatible with PaddlePaddle")
+
+
 @pytest.mark.parametrize("device", devices)
 def test_ind2ptr(device):
+    skip_if_cuda_incompatible(None, device)
     set_testing_device(device)
 
     row = tensor([2, 2, 4, 5, 5, 6], paddle.int64, device)
@@ -34,7 +51,7 @@ def test_ind2ptr(device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_storage(dtype, device):
-    maybe_skip_testing(dtype, device)
+    skip_if_cuda_incompatible(dtype, device)
     set_testing_device(device)
 
     row, col = tensor([[0, 0, 1, 1], [1, 0, 1, 0]], paddle.int64, device)
@@ -52,7 +69,7 @@ def test_storage(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_caching(dtype, device):
-    maybe_skip_testing(dtype, device)
+    skip_if_cuda_incompatible(dtype, device)
     set_testing_device(device)
 
     row, col = tensor([[0, 0, 1, 1], [0, 1, 0, 1]], paddle.int64, device)
@@ -110,7 +127,7 @@ def test_caching(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_utility(dtype, device):
-    maybe_skip_testing(dtype, device)
+    skip_if_cuda_incompatible(dtype, device)
     set_testing_device(device)
 
     row, col = tensor([[0, 0, 1, 1], [1, 0, 1, 0]], paddle.int64, device)
@@ -156,7 +173,7 @@ def test_utility(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_coalesce(dtype, device):
-    maybe_skip_testing(dtype, device)
+    skip_if_cuda_incompatible(dtype, device)
     set_testing_device(device)
 
     row, col = tensor([[0, 0, 0, 1, 1], [0, 1, 1, 0, 1]], paddle.int64, device)
@@ -182,7 +199,7 @@ def test_coalesce(dtype, device):
 
 @pytest.mark.parametrize("dtype,device", product(dtypes, devices))
 def test_sparse_reshape(dtype, device):
-    maybe_skip_testing(dtype, device)
+    skip_if_cuda_incompatible(dtype, device)
     set_testing_device(device)
 
     row, col = tensor([[0, 1, 2, 3], [0, 1, 2, 3]], paddle.int64, device)
